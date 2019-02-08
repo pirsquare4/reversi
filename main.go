@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-BOARDSIZE = 8
+BOARDSIZE := 8
 
 //Where the games begin!
 func main() {
@@ -51,7 +51,7 @@ func main() {
 	game.set("H8", BLACK)
 	PrintBoard(game.board)
 
-	currentplayer = Player1
+	currentplayer = Player2
 	for loop {
 		if currentplayer == BLACK {
 			currentplayer == WHITE
@@ -63,30 +63,36 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
 		text = text[0:5]
-		game.set(text, Player1)
-
-
+		fourtyfive := time.NewTimer(time.Second * 45)
+		fiftyfive := time.NewTimer(time.Second * 55)
+		timer := time.NewTimer(time.Second * 60)
+// stop when move is made
+		game.set(text, currentplayer)
+		if len(text) != 0 {
+			stop := timer.Stop()
+			stop1 := fourtyfive.Stop()
+			stop2 := fiftyfive.Stop()
+				if stop2 || stop1 || stop {
+				}
+		}
+		 <- fourtyfive.C
+		println("15 seconds left")
+		 <- fiftyfive.C
+		println("5 seconds left")
+		 <- timer.C
+		println("Time Expired")
+		//do suggested move
+		// randominteger = Random().nextInt(len(getMoves))
+		// String random = ((getMoves[randominteger]), int)
+		// game.set(random, currentplayer)
+		//
 		PrintBoard(game.board)
 		}
-	fourtyfive := time.NewTimer(time.Second * 45)
-	fiftyfive := time.NewTimer(time.Second * 55)
-	timer := time.NewTimer(time.Second * 60)
+
 
 	fmt.Println("Thanks for playing!")
 
-	stop := timer.Stop()
-	stop1 := fourtyfive.Stop()
-	stop2 := fiftyfive.Stop()
-    if stop2 || stop1 || stop {
 
-    }
-	 <- fourtyfive.C
-  println("15 seconds left")
-	 <- fiftyfive.C
-  println("5 seconds left")
-	 <- timer.C
-  println("Time Expired")
-	//do suggested move
 
 }
 //Values for Player 1 and Player 2.
@@ -243,47 +249,47 @@ func CreateNewBoard() (game Game) {
 //The length of the array is equal to the amount of moves available
 //Example: If black can place a piece in E3 and D2, then this function will return
 //["E3", "D2"]
-func getMoves(game Game, player Piece) []string {
-	board := game.board
-	var moves []string
-	for index, piece := range board {
-		if piece == EMPTY {
-			adjacentPlaces := [...]int{-9, -8, -7, -1, 1, 7, 8, 9}
-			for _, adder := range adjacentPlaces {
-				//CHECK K
-				adjacentIndex := index + adder
-				if adjacentIndex > 63 || adjacentIndex < 0 {
-					continue
-				}
-				if adder == -9 || adder == -1 || adder == 7 {
-					if index % BOARDSIZE < adjacentIndex % BOARDSIZE { //then valid tile
-						continue
-					}
-				}
-				if adder == -7 || adder == 1 || adder = 9 {
-					if index % BOARDSIZE > adjacentIndex % BOARDSIZE { //then valid tile
-						continue
-					}
-				}
-				isValidMove = checkSandwhich(game, player, index, adder, false)
-				if isValidMove {
-					moves = append
-				}
-
-			}
-		}
-	}
-	return moves
-}
-
-func checkSandwhich(GameState Game, player Piece, index int, adder int, found bool) bool{
-	board = GameState.board
-	adjacentIndex = adder + index
-	if !found {
-		if board[adjacentIndex] == player.Opposite() {
-
-		}
-	} else {
-
-	}
+// func getMoves(game Game, player Piece) []string {
+// 	board := game.board
+// 	var moves []string
+// 	for index, piece := range board {
+// 		if piece == EMPTY {
+// 			adjacentPlaces := [...]int{-9, -8, -7, -1, 1, 7, 8, 9}
+// 			for _, adder := range adjacentPlaces {
+// 				//CHECK K
+// 				adjacentIndex := index + adder
+// 				if adjacentIndex > 63 || adjacentIndex < 0 {
+// 					continue
+// 				}
+// 				if adder == -9 || adder == -1 || adder == 7 {
+// 					if index % BOARDSIZE < adjacentIndex % BOARDSIZE { //then valid tile
+// 						continue
+// 					}
+// 				}
+// 				if adder == -7 || adder == 1 || adder = 9 {
+// 					if index % BOARDSIZE > adjacentIndex % BOARDSIZE { //then valid tile
+// 						continue
+// 					}
+// 				}
+// 				isValidMove = checkSandwhich(game, player, index, adder, false)
+// 				if isValidMove {
+// 					moves = append
+// 				}
+//
+// 			}
+// 		}
+// 	}
+// 	return moves
+// }
+//
+// func checkSandwhich(GameState Game, player Piece, index int, adder int, found bool) bool{
+// 	board = GameState.board
+// 	adjacentIndex = adder + index
+// 	if !found {
+// 		if board[adjacentIndex] == player.Opposite() {
+//
+// 		}
+// 	} else {
+//
+// 	}
 }
