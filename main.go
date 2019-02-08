@@ -17,12 +17,12 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
 		text = text[0:5]
-		if (strings.Compare("black", text) == 0){
+		if (text == "black" || text == "Black"){
 			Player1 = 1
 			Player2 = 0
 			loop = false
 			print(text)
-		} else if (strings.Compare("white", text) == 0) {
+		} else if (text == "white" || text == "White") {
 			Player1 = 0
 			Player2 = 1
 			loop = false
