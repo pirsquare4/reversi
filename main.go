@@ -18,14 +18,14 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
 		text = text[0:5]
-		if (text == "black" || text == "Black"){
-			Player1 = 1
-			Player2 = 0
+		if (text == "black" || text == "Black") {
+			Player1 = BLACK
+			Player2 = WHITE
 			loop = false
 			print(text)
 		} else if (text == "white" || text == "White") {
-			Player1 = 0
-			Player2 = 1
+			Player1 = WHITE
+			Player2 = BLACK
 			loop = false
 		} else {
 			fmt.Println("Not a valid input, please try again")
@@ -47,15 +47,48 @@ func main() {
 	game.set("a1", WHITE)
 	game.set("H8", BLACK)
 	PrintBoard(game.board)
+	currentplayer = Player1
+	for loop {
+		if currentplayer == BLACK {
+			currentplayer == WHITE
+		} else if currentplayer == WHITE {
+			currentplayer == BLACK
+		}
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Println("Choose your move")
+		text, _ := reader.ReadString('\n')
+		text = strings.Replace(text, "\n", "", -1)
+		text = text[0:5]
+		game.set(text, Player1)
 
+
+		PrintBoard(game.board)
+		}
+	fourtyfive := time.NewTimer(time.Second * 45)
+	fiftyfive := time.NewTimer(time.Second * 55)
+	timer := time.NewTimer(time.Second * 60)
 
 	fmt.Println("Thanks for playing!")
+
+	stop := timer.Stop()
+	stop1 := fourtyfive.Stop()
+	stop2 := fiftyfive.Stop()
+    if stop2 || stop1 || stop {
+
+    }
+	 <- fourtyfive.C
+  println("15 seconds left")
+	 <- fiftyfive.C
+  println("5 seconds left")
+	 <- timer.C
+  println("Time Expired")
+	//do suggested move
 
 }
 //Values for Player 1 and Player 2.
 //White is 0, Black is 1.
-var Player1 int
-var Player2 int
+var Player1 Piece
+var Player2 Piece
 
 //Board struct stuff
 type Piece int
@@ -211,4 +244,9 @@ func getMoves(game Game, player Piece) []string {
 		}
 	}
 	return moves
+}
+
+//Places a piece down if it is within getMoves
+func placePiece() (game Game) {
+
 }
