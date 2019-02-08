@@ -66,9 +66,29 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
 		text = text[0:5]
-		game.set(text, Player1)
-
-
+		fourtyfive := time.NewTimer(time.Second * 45)
+		fiftyfive := time.NewTimer(time.Second * 55)
+		timer := time.NewTimer(time.Second * 60)
+// stop when move is made
+		game.set(text, currentplayer)
+		if len(text) != 0 {
+			stop := timer.Stop()
+			stop1 := fourtyfive.Stop()
+			stop2 := fiftyfive.Stop()
+				if stop2 || stop1 || stop {
+				}
+		}
+		 <- fourtyfive.C
+		println("15 seconds left")
+		 <- fiftyfive.C
+		println("5 seconds left")
+		 <- timer.C
+		println("Time Expired")
+		//do suggested move
+		// randominteger = Random().nextInt(len(getMoves))
+		// String random = ((getMoves[randominteger]), int)
+		// game.set(random, currentplayer)
+		//
 		PrintBoard(game.board)
 		}
 
