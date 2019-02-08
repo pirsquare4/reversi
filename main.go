@@ -47,6 +47,7 @@ func main() {
 	game.set("a1", WHITE)
 	game.set("H8", BLACK)
 	PrintBoard(game.board)
+
 	currentplayer = Player1
 	for loop {
 		if currentplayer == BLACK {
