@@ -10,17 +10,20 @@ import (
 	"time"
 )
 
-BOARDSIZE := 8
+var BOARDSIZE int
 
 //Where the games begin!
 func main() {
+	BOARDSIZE = 8
 	loop := true
 	for loop {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Println("Player 1, Choose your Color: White or Black?")
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
-		text = text[0:5]
+		if len(text) > 5 {
+			text = text[0:5]
+		}
 		if (text == "black" || text == "Black") {
 			Player1 = BLACK
 			Player2 = WHITE
@@ -51,12 +54,12 @@ func main() {
 	game.set("H8", BLACK)
 	PrintBoard(game.board)
 
-	currentplayer = Player2
+	currentplayer := Player1
 	for loop {
 		if currentplayer == BLACK {
-			currentplayer == WHITE
+			currentplayer = WHITE
 		} else if currentplayer == WHITE {
-			currentplayer == BLACK
+			currentplayer = BLACK
 		}
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Println("Choose your move")
@@ -249,47 +252,34 @@ func CreateNewBoard() (game Game) {
 //The length of the array is equal to the amount of moves available
 //Example: If black can place a piece in E3 and D2, then this function will return
 //["E3", "D2"]
-// func getMoves(game Game, player Piece) []string {
-// 	board := game.board
-// 	var moves []string
-// 	for index, piece := range board {
-// 		if piece == EMPTY {
-// 			adjacentPlaces := [...]int{-9, -8, -7, -1, 1, 7, 8, 9}
-// 			for _, adder := range adjacentPlaces {
-// 				//CHECK K
-// 				adjacentIndex := index + adder
-// 				if adjacentIndex > 63 || adjacentIndex < 0 {
-// 					continue
-// 				}
-// 				if adder == -9 || adder == -1 || adder == 7 {
-// 					if index % BOARDSIZE < adjacentIndex % BOARDSIZE { //then valid tile
-// 						continue
-// 					}
-// 				}
-// 				if adder == -7 || adder == 1 || adder = 9 {
-// 					if index % BOARDSIZE > adjacentIndex % BOARDSIZE { //then valid tile
-// 						continue
-// 					}
-// 				}
-// 				isValidMove = checkSandwhich(game, player, index, adder, false)
-// 				if isValidMove {
-// 					moves = append
-// 				}
-//
-// 			}
-// 		}
-// 	}
-// 	return moves
-// }
-//
-// func checkSandwhich(GameState Game, player Piece, index int, adder int, found bool) bool{
-// 	board = GameState.board
-// 	adjacentIndex = adder + index
-// 	if !found {
-// 		if board[adjacentIndex] == player.Opposite() {
-//
-// 		}
-// 	} else {
-//
-// 	}
+func getMoves(game Game, player Piece) []string {
+	board := game.board
+	var moves []string
+	for index, piece := range board {
+		if piece == EMPTY {
+			adjacentPlaces := [...]int{-9, -8, -7, -1, 1, 7, 8, 9}
+			for _, adder := range adjacentPlaces {
+				//CHECK K
+				adjacentIndex := index + adder
+				if adjacentIndex > 63 || adjacentIndex < 0 {
+					continue
+				}
+				if adder == -9 || adder == -1 || adder == 7 {
+					if index % BOARDSIZE < adjacentIndex % BOARDSIZE { //then valid tile
+						continue
+					}
+				}
+				if adder == -7 || adder == 1 || adder == 9 {
+					if index % BOARDSIZE > adjacentIndex % BOARDSIZE { //then valid tile
+						continue
+					}
+				}
+				isValidMove := checkSandwhich(game, player, index, adder, false)
+				if isValidMove {
+				}
+
+			}
+		}
+	}
+	return moves
 }
