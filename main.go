@@ -12,7 +12,7 @@ import (
 func main() {
 	loop := true
 	for loop {
-		reader := bufio.New(os.Stdin)
+		reader := bufio.NewReader(os.Stdin)
 		fmt.Println("Player 1, Choose your Color: White or Black?")
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
@@ -64,8 +64,6 @@ const (
 	WHITE
 	BLACK
 )
-BLACK
-WHITE
 type Game struct {
 	board [64]Piece
 }
@@ -200,9 +198,9 @@ func CreateNewBoard() (game Game) {
 func getMoves(game Game, player Piece) []string {
 	board := game.board
 	var moves []string
-	for index, piece := range board {
+	for _, piece := range board {
 		if piece == EMPTY {
-			adjacentPlaces = [-9, -8, -7, -1, 1, 7, 8, 9]
+			//adjacentPlaces = [-9, -8, -7, -1, 1, 7, 8, 9]
 			for _, adder := range board {
 				//CHECK K
 				if adder == -9 || adder == -1 || adder == 7 {
