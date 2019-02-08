@@ -223,15 +223,31 @@ func getMoves(game Game, player Piece) []string {
 					if index % BOARDSIZE < adjacentIndex % BOARDSIZE { //then valid tile
 						continue
 					}
+				}
 				if adder == -7 || adder == 1 || adder = 9 {
 					if index % BOARDSIZE > adjacentIndex % BOARDSIZE { //then valid tile
 						continue
 					}
 				}
-				if board[adjacentIndex] == 
+				isValidMove = checkSandwhich(game, player, index, adder, false)
+				if isValidMove {
+					moves = append 
+				}
 
 			}
 		}
 	}
 	return moves
+}
+
+func checkSandwhich(GameState Game, player Piece, index int, adder int, found bool) bool{
+	board = GameState.board
+	adjacentIndex = adder + index
+	if !found {
+		if board[adjacentIndex] == player.Opposite() {
+			
+		}
+	} else {
+
+	}
 }
