@@ -15,11 +15,14 @@ func main() {
 		reader := bufio.New(os.Stdin)
 		fmt.Println("Player 1, Choose your Color: White or Black?")
 		text, _ := reader.ReadString('\n')
-		if (text == "black\n" || text == "Black\n"){
+		text = strings.Replace(text, "\n", "", -1)
+		text = text[0:5]
+		if (strings.Compare("black", text) == 0){
 			Player1 = 1
 			Player2 = 0
 			loop = false
-		} else if (text == "white\n" || text == "White\n") {
+			print(text)
+		} else if (strings.Compare("white", text) == 0) {
 			Player1 = 0
 			Player2 = 1
 			loop = false
@@ -43,12 +46,12 @@ func main() {
 	game.set("a1", WHITE)
 	game.set("H8", BLACK)
 	PrintBoard(game.board)
-	
+
 
 	fmt.Println("Thanks for playing!")
 
 }
-//Values for Player 1 and Player 2. 
+//Values for Player 1 and Player 2.
 //White is 0, Black is 1.
 var Player1 int
 var Player2 int
@@ -176,7 +179,7 @@ func PrintBoard(board [64]Piece) {
 	return
 }
 
-//Creates a Board at the 
+//Creates a Board at the
 func CreateNewBoard() (game Game) {
 	var new_board [64]Piece
 	for i := 0; i < 64; i ++ {
@@ -185,7 +188,7 @@ func CreateNewBoard() (game Game) {
 	new_board[27] = BLACK
 	new_board[28] = WHITE
 	new_board[35] = WHITE
-	new_board[36] = BLACK  
+	new_board[36] = BLACK
 	game.board = new_board
 	return game
 }
