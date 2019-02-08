@@ -71,24 +71,8 @@ func main() {
 
 		PrintBoard(game.board)
 		}
-	fourtyfive := time.NewTimer(time.Second * 45)
-	fiftyfive := time.NewTimer(time.Second * 55)
-	timer := time.NewTimer(time.Second * 60)
 
 	fmt.Println("Thanks for playing!")
-
-	stop := timer.Stop()
-	stop1 := fourtyfive.Stop()
-	stop2 := fiftyfive.Stop()
-    if stop2 || stop1 || stop {
-
-    }
-	 <- fourtyfive.C
-  println("15 seconds left")
-	 <- fiftyfive.C
-  println("5 seconds left")
-	 <- timer.C
-  println("Time Expired")
 	//do suggested move
 }
 //Values for Player 1 and Player 2.
