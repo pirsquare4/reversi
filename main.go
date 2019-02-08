@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 )  
+BOARDSIZE = 8
+
 //Where the games begin!
 func main() {
 	loop := true
@@ -77,6 +79,16 @@ func (piece Piece) String() string {
     } else {
     	return names[piece]
     }
+}
+
+func (piece Piece) Opposite() Piece {
+	if piece == WHITE {
+		return BLACK
+	} else if piece == BLACK {
+		return WHITE 
+	} else {
+		return EMPTY
+	}
 }
 //Returns a Piece RESULT that was found at PLACE. For example if
 //a1 is empty, then board.get("a1") will return the piece empty.
@@ -198,14 +210,26 @@ func CreateNewBoard() (game Game) {
 func getMoves(game Game, player Piece) []string {
 	board := game.board
 	var moves []string
-	for _, piece := range board {
+	for index, piece := range board {
 		if piece == EMPTY {
-			//adjacentPlaces = [-9, -8, -7, -1, 1, 7, 8, 9]
-			for _, adder := range board {
+			adjacentPlaces := [...]int{-9, -8, -7, -1, 1, 7, 8, 9}
+			for _, adder := range adjacentPlaces {
 				//CHECK K
-				if adder == -9 || adder == -1 || adder == 7 {
-
+				adjacentIndex := index + adder
+				if adjacentIndex > 63 || adjacentIndex < 0 {
+					continue
 				}
+				if adder == -9 || adder == -1 || adder == 7 {
+					if index % BOARDSIZE < adjacentIndex % BOARDSIZE { //then valid tile
+						continue
+					}
+				if adder == -7 || adder == 1 || adder = 9 {
+					if index % BOARDSIZE > adjacentIndex % BOARDSIZE { //then valid tile
+						continue
+					}
+				}
+				if board[adjacentIndex] == 
+
 			}
 		}
 	}
