@@ -33,6 +33,8 @@ func destructiveSandwhich(GameState *Game, player Piece, index int, adder int, f
 	adjacentIndex := adder + index
 	if adjacentIndex < 0 || adjacentIndex > 63 {
 		return false
+	} else if !isAdjacent(index, adjacentIndex) {
+		return false
 	}
 	if !found {
 		if board[adjacentIndex] == player.Opposite() && isAdjacent(adjacentIndex, adjacentIndex + adder) {
@@ -73,7 +75,7 @@ func isAdjacent(tile1 int, tile2 int) bool {
 	} else if  tile1 < 0 || tile2 < 0 {
 		return false 
 	} else if (tile1 % BOARDSIZE == tile2 % BOARDSIZE - 1) ||
-	 tile1 % BOARDSIZE == tile2 % BOARDSIZE || 
+	 (tile1 % BOARDSIZE == tile2 % BOARDSIZE) || 
 	 (tile1 % BOARDSIZE == tile2 % BOARDSIZE + 1) {
 	 	if isAbove(tile1, tile2) || isSame(tile1, tile2) || isBelow(tile1, tile2) {
 	 		return true
@@ -114,14 +116,14 @@ func TranslateToMove(place int) string {
 }
 
 func isAbove(tile1 int, tile2 int) bool {
-	return (tile1/8) - (tile2/8) == -1
+	return (tile1/BOARDSIZE) - (tile2/BOARDSIZE) == -1
 }
 func isSame(tile1 int, tile2 int) bool {
-	return (tile1/8) - (tile2/8) == 0
+	return (tile1/BOARDSIZE) - (tile2/BOARDSIZE) == 0
 }
 
 func isBelow(tile1 int, tile2 int) bool {
-	return (tile1/8) - (tile2/8) == 1
+	return (tile1/BOARDSIZE) - (tile2/BOARDSIZE) == 1
 }
 
 func Contains(a []string, x string) bool {

@@ -71,13 +71,13 @@ func main() {
 		}
 		loop = true 
 		for loop {
-			moveReader := bufio.NewReader(os.Stdin)
-			playerChoice, _ := moveReader.ReadString('\n')
-			//randnum := rand.Intn(len(moves))
-			//playerChoice := moves[randnum]
-			playerChoice = strings.Replace(playerChoice, "\n", "", -1)
-			playerChoice = strings.Replace(playerChoice, "\r", "", -1)
-			playerChoice = strings.ToUpper(playerChoice)
+			//moveReader := bufio.NewReader(os.Stdin)
+			//playerChoice, _ := moveReader.ReadString('\n')
+			//playerChoice = strings.Replace(playerChoice, "\n", "", -1)
+			//playerChoice = strings.Replace(playerChoice, "\r", "", -1)
+			//playerChoice = strings.ToUpper(playerChoice)
+			randnum := rand.Intn(len(moves))
+			playerChoice := moves[randnum]//DUMB AI
 			if Contains(moves, playerChoice) {
 				rawMove, _ := getIndex(playerChoice)
 				game.flipAll(currentplayer, rawMove)
@@ -312,9 +312,9 @@ func (game Game) score() (int, int) {
 	white := 0
 	for _, tile := range(board) {
 		if tile == WHITE {
-			black++
-		} else if tile == BLACK {
 			white++
+		} else if tile == BLACK {
+			black++
 		}
 	}
 	return white, black
