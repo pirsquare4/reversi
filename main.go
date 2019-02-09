@@ -10,11 +10,10 @@ import (
 	"time"
 )
 
-var BOARDSIZE int
+var BOARDSIZE = 8
 
 //Where the games begin!
 func main() {
-	BOARDSIZE = 8
 	loop := true
 	for loop {
 		reader := bufio.NewReader(os.Stdin)
@@ -42,6 +41,11 @@ func main() {
 	//PlayGame()
 	game := CreateNewBoard()
 	PrintBoard(game.board)
+	fmt.Println("Moves for black are:", getMoves(game, BLACK))
+	fmt.Println(TranslateToMove(63))
+	fmt.Println(TranslateToMove(1))
+	fmt.Println(TranslateToMove(15))
+	fmt.Println(TranslateToMove(0))
 	E4, _ := game.get("E4")
 	D4, _ := game.get("D4")
 	A4, _ := game.get("A4")
@@ -273,6 +277,7 @@ func getMoves(game Game, player Piece) []string {
 				}
 				isValidMove := checkSandwhich(game, player, index, adder, false)
 				if isValidMove {
+					moves = append(moves, TranslateToMove(index))
 				}
 
 			}
