@@ -14,16 +14,51 @@ func checkSandwhich(GameState Game, player Piece, index int, adder int, found bo
 			return false
 		}
 	} else {
-		if board[adjacentIndex] == player.Opposite() {
-			if isAdjacent(adjacentIndex, adjacentIndex + adder) {
-				valid := checkSandwhich(GameState, player, adjacentIndex, adder, true)
+		if board[adjacentIndex] == player.Opposite() && isAdjacent(adjacentIndex, adjacentIndex + adder) {
+				valid := checkSandwhich(GameState, player, adjacentIndex, adder, found)
 				return valid
-			}
-			return false
-		} else {
+		} else if board[adjacentIndex] == player {
 			return true
+		} else {
+			return false
 		}
 	}
+}
+
+func destructiveSandwhich(GameState *Game, player Piece, index int, adder int, found bool) bool{
+	board := GameState.board
+	adjacentIndex := adder + index
+	if !found {
+		if board[adjacentIndex] == player.Opposite() && isAdjacent(adjacentIndex, adjacentIndex + adder) {
+			valid := destructiveSandwhich(GameState, player, adjacentIndex, adder, true)
+			if valid {
+				GameState.setRaw(adjacentIndex, player)
+			}
+			return valid
+		} else {
+			return false
+		}
+	} else {
+		if board[adjacentIndex] == player.Opposite() && isAdjacent(adjacentIndex, adjacentIndex + adder) {
+				valid := destructiveSandwhich(GameState, player, adjacentIndex, adder, found)
+				if valid {
+				GameState.setRaw(adjacentIndex, player)
+				}
+				return valid
+		} else if board[adjacentIndex] == player {
+			return true
+		} else {
+			return false
+		}
+	}
+}
+
+func (GameState *Game) flipAll (player Piece, index int) {
+	adjacentPlaces := [...]int{-9, -8, -7, -1, 1, 7, 8, 9}
+	for _, adjacentPlace := range adjacentPlaces {
+		destructiveSandwhich(GameState, player, index, adjacentPlace, false)
+	}
+	GameState.setRaw(index, player)
 }
 
 func isAdjacent(tile1 int, tile2 int) bool {
@@ -46,28 +81,28 @@ func TranslateToMove(place int) string {
 	if place < 0 || place > 63 {
 		return "NaN"
 	}
-	quotient := place / BOARDSIZE
-	column := strconv.Itoa((place % BOARDSIZE) + 1)
-	var row string
-	switch quotient {
+	row := strconv.Itoa(place / BOARDSIZE + 1)
+	remainder := (place % BOARDSIZE)
+	var column string
+	switch remainder {
 	case 0:
-		row = "A"
+		column = "A"
 	case 1:
-		row = "B"
+		column = "B"
 	case 2:
-		row = "C"
+		column = "C"
 	case 3:
-		row = "D"
+		column = "D"
 	case 4:
-		row = "E"
+		column = "E"
 	case 5:
-		row = "F"
+		column = "F"
 	case 6:
-		row = "G"
+		column = "G"
 	case 7:
-		row = "H"
+		column = "H"
 	}
-	columnAndRow := row + column
+	columnAndRow := column + row
 	return columnAndRow
 
 }
@@ -81,4 +116,13 @@ func isSame(tile1 int, tile2 int) bool {
 
 func isBelow(tile1 int, tile2 int) bool {
 	return (tile1/8) - (tile2/8) == 1
+}
+
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }

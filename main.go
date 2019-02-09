@@ -7,7 +7,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
-	"time"
+	//"time"
 )
 
 var BOARDSIZE = 8
@@ -20,9 +20,7 @@ func main() {
 		fmt.Println("Player 1, Choose your Color: White or Black?")
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
-		if len(text) > 5 {
-			text = text[0:5]
-		}
+		text = strings.Replace(text, "\r", "", -1)
 		if (text == "black" || text == "Black") {
 			Player1 = BLACK
 			Player2 = WHITE
@@ -38,69 +36,68 @@ func main() {
 	}
 	fmt.Println("Player 1 is", Player1)
 	fmt.Println("Player 2 is", Player2)
-	//PlayGame()
 	game := CreateNewBoard()
-	PrintBoard(game.board)
-	fmt.Println("Moves for black are:", getMoves(game, BLACK))
-	fmt.Println(TranslateToMove(63))
-	fmt.Println(TranslateToMove(1))
-	fmt.Println(TranslateToMove(15))
-	fmt.Println(TranslateToMove(0))
-	E4, _ := game.get("E4")
-	D4, _ := game.get("D4")
-	A4, _ := game.get("A4")
-	fmt.Println("E4 is", E4)
-	fmt.Println("D4 is", D4)
-	fmt.Println("A4 is", A4)
-	game.set("e4", BLACK)
-	game.set("d4", EMPTY)
-	game.set("a1", WHITE)
-	game.set("H8", BLACK)
-	PrintBoard(game.board)
+	currentplayer := BLACK
 
-	currentplayer := Player1
-	for loop {
-		if currentplayer == BLACK {
-			currentplayer = WHITE
-		} else if currentplayer == WHITE {
-			currentplayer = BLACK
-		}
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Println("Choose your move")
-		text, _ := reader.ReadString('\n')
-		text = strings.Replace(text, "\n", "", -1)
-		text = text[0:5]
-		fourtyfive := time.NewTimer(time.Second * 45)
-		fiftyfive := time.NewTimer(time.Second * 55)
-		timer := time.NewTimer(time.Second * 60)
-// stop when move is made
-		game.set(text, currentplayer)
-		if len(text) != 0 {
-			stop := timer.Stop()
-			stop1 := fourtyfive.Stop()
-			stop2 := fiftyfive.Stop()
-				if stop2 || stop1 || stop {
-				}
-		}
-		 <- fourtyfive.C
-		println("15 seconds left")
-		 <- fiftyfive.C
-		println("5 seconds left")
-		 <- timer.C
-		println("Time Expired")
-		//do suggested move
-		// randominteger = Random().nextInt(len(getMoves))
-		// String random = ((getMoves[randominteger]), int)
-		// game.set(random, currentplayer)
-		//
+	for !game.gameOver() {
+
 		PrintBoard(game.board)
+		whitePoints, blackPoints := game.score()
+		fmt.Println("White:", whitePoints, "     ", "Black:", blackPoints)
+		fmt.Println("")
+		if Player1 == currentplayer {
+			fmt.Println("Player 1, it's your turn!")
+		} else if Player2 == currentplayer {
+			fmt.Println("Player 2, it's your turn!")
 		}
+		moves := getMoves(game, currentplayer)
+		if len(moves) > 0 {
+			fmt.Println("Your Available moves are:")
+		}
+		for i, move := range moves {
+			fmt.Print(move)
+			fmt.Print(" ")
+			if i == len(moves) - 1{
+				fmt.Println(".")
+			}
+		}
+		if (len(moves) == 0) {
+			fmt.Println("No moves available.", currentplayer.String(), "turn is skipped")
+			currentplayer = currentplayer.Opposite()
+			continue
+		}
+		loop = true 
+		for loop {
+			moveReader := bufio.NewReader(os.Stdin)
+			playerChoice, _ := moveReader.ReadString('\n')
+			playerChoice = strings.Replace(playerChoice, "\n", "", -1)
+			playerChoice = strings.Replace(playerChoice, "\r", "", -1)
+			playerChoice = strings.ToUpper(playerChoice)
+			if Contains(moves, playerChoice) {
+				rawMove, _ := getIndex(playerChoice)
+				game.flipAll(currentplayer, rawMove)
+				loop = false
+				currentplayer = currentplayer.Opposite()
+			} else {
+				fmt.Println("Not a valid move, please try again")
+			}
+		}
+
+
+	}
+
+	whiteScore, blackScore := game.score()
+	if whiteScore > blackScore {
+		fmt.Println("White Wins!")
+	} else if blackScore < whiteScore {
+		fmt.Println("Black Wins!")
+	} else {
+		fmt.Println("Its a tie!")
+	}
 
 	fmt.Println("Thanks for playing!")
-	//do suggested move
 }
 //Values for Player 1 and Player 2.
-//White is 0, Black is 1.
 var Player1 Piece
 var Player2 Piece
 
@@ -157,6 +154,14 @@ func (game *Game) set(place string, piece Piece) (err error) {
 	game.board[index] = piece
 	return
 }
+
+func (game *Game) setRaw(place int, piece Piece) (err error) {
+	if place < 0 || place > 63 {
+		return
+	}
+	game.board[place] = piece
+	return
+}
 //Translates a string, ie "A1" to the according number
 // "A1" = 0, "A2" = 1... etc
 func getIndex(place string) (result int, err error) {
@@ -193,7 +198,7 @@ func getIndex(place string) (result int, err error) {
 		err = errors.New(place + " is not a valid spot on board")
 		return
 	}
-	result = int((letternum - 1) * 8 + (number - 1))
+	result = int((number - 1) * 8 + (letternum - 1))
 	return
 }
 
@@ -201,21 +206,21 @@ func PrintBoard(board [64]Piece) {
 	for i := 56; i >= 0; i = i - 8 {
 		switch i {
 		case 56:
-    		fmt.Print("H ")
+    		fmt.Print("8 ")
 		case 48:
-    		fmt.Print("G ")
+    		fmt.Print("7 ")
 		case 40:
-    		fmt.Print("F ")
+    		fmt.Print("6 ")
     	case 32:
-    		fmt.Print("E ")
+    		fmt.Print("5 ")
     	case 24:
-    		fmt.Print("D ")
+    		fmt.Print("4 ")
     	case 16:
-    		fmt.Print("C ")
+    		fmt.Print("3 ")
     	case 8:
-    		fmt.Print("B ")
+    		fmt.Print("2 ")
     	case 0:
-    		fmt.Print("A ")
+    		fmt.Print("1 ")
     }
 		for j:= 0; j < 8; j++ {
 			color := board[i + j]
@@ -231,7 +236,7 @@ func PrintBoard(board [64]Piece) {
 		}
 		fmt.Println("")
 	}
-	fmt.Println("  1 2 3 4 5 6 7 8")
+	fmt.Println("  A B C D E F G H")
 	return
 }
 
@@ -284,4 +289,22 @@ func getMoves(game Game, player Piece) []string {
 		}
 	}
 	return moves
+}
+
+func (game Game) gameOver() bool {
+	return len(getMoves(game, WHITE)) == 0 && len(getMoves(game, BLACK)) == 0
+}
+
+func (game Game) score() (int, int) {
+	board := game.board
+	black := 0
+	white := 0
+	for _, tile := range(board) {
+		if tile == WHITE {
+			black++
+		} else if tile == BLACK {
+			white++
+		}
+	}
+	return white, black
 }
