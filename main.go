@@ -7,7 +7,8 @@ import (
 	"errors"
 	"strconv"
 	"strings"
-	//"time"
+	"math/rand"
+	"time"
 )
 
 var BOARDSIZE = 8
@@ -15,6 +16,7 @@ var BOARDSIZE = 8
 //Where the games begin!
 func main() {
 	loop := true
+	rand.Seed(time.Now().UnixNano())
 	for loop {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Println("Player 1, Choose your Color: White or Black?")
@@ -43,6 +45,7 @@ func main() {
 
 		PrintBoard(game.board)
 		whitePoints, blackPoints := game.score()
+		fmt.Println("")
 		fmt.Println("White:", whitePoints, "     ", "Black:", blackPoints)
 		fmt.Println("")
 		if Player1 == currentplayer {
@@ -70,6 +73,8 @@ func main() {
 		for loop {
 			moveReader := bufio.NewReader(os.Stdin)
 			playerChoice, _ := moveReader.ReadString('\n')
+			//randnum := rand.Intn(len(moves))
+			//playerChoice := moves[randnum]
 			playerChoice = strings.Replace(playerChoice, "\n", "", -1)
 			playerChoice = strings.Replace(playerChoice, "\r", "", -1)
 			playerChoice = strings.ToUpper(playerChoice)
@@ -85,17 +90,19 @@ func main() {
 
 
 	}
-
+	PrintBoard(game.board)
 	whiteScore, blackScore := game.score()
 	if whiteScore > blackScore {
 		fmt.Println("White Wins!")
-	} else if blackScore < whiteScore {
+	} else if blackScore > whiteScore {
 		fmt.Println("Black Wins!")
 	} else {
 		fmt.Println("Its a tie!")
 	}
 
 	fmt.Println("Thanks for playing!")
+	fmt.Println("White's Score was", whiteScore)
+	fmt.Println("Black's Score was", blackScore)
 }
 //Values for Player 1 and Player 2.
 var Player1 Piece
@@ -262,6 +269,7 @@ func getMoves(game Game, player Piece) []string {
 	board := game.board
 	var moves []string
 	for index, piece := range board {
+		foundmove := false
 		if piece == EMPTY {
 			adjacentPlaces := [...]int{-9, -8, -7, -1, 1, 7, 8, 9}
 			for _, adder := range adjacentPlaces {
@@ -282,10 +290,13 @@ func getMoves(game Game, player Piece) []string {
 				}
 				isValidMove := checkSandwhich(game, player, index, adder, false)
 				if isValidMove {
-					moves = append(moves, TranslateToMove(index))
+					foundmove = true
 				}
 
 			}
+		}
+		if foundmove {
+			moves = append(moves, TranslateToMove(index))
 		}
 	}
 	return moves

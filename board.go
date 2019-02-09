@@ -6,6 +6,9 @@ import (
 func checkSandwhich(GameState Game, player Piece, index int, adder int, found bool) bool{
 	board := GameState.board
 	adjacentIndex := adder + index
+	if adjacentIndex < 0 || adjacentIndex > 63 {
+		return false
+	}
 	if !found {
 		if board[adjacentIndex] == player.Opposite() && isAdjacent(adjacentIndex, adjacentIndex + adder) {
 			valid := checkSandwhich(GameState, player, adjacentIndex, adder, true)
@@ -28,6 +31,9 @@ func checkSandwhich(GameState Game, player Piece, index int, adder int, found bo
 func destructiveSandwhich(GameState *Game, player Piece, index int, adder int, found bool) bool{
 	board := GameState.board
 	adjacentIndex := adder + index
+	if adjacentIndex < 0 || adjacentIndex > 63 {
+		return false
+	}
 	if !found {
 		if board[adjacentIndex] == player.Opposite() && isAdjacent(adjacentIndex, adjacentIndex + adder) {
 			valid := destructiveSandwhich(GameState, player, adjacentIndex, adder, true)
