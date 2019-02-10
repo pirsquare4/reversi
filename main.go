@@ -16,6 +16,34 @@ var BOARDSIZE = 8
 //Where the games begin!
 func main() {
 	loop := true
+	ActivateAI := false
+	//ActivateAI2 := false
+	a := true
+	for loop {
+		reader := bufio.NewReader(os.Stdin)
+		if a {
+			fmt.Println("Hello, and welcome to reversi, a strategy game where you must outplay and outskill your opponent!")
+			fmt.Println("First of all, how many human players will be participating? 1 or 2?")
+		}
+		text, _ := reader.ReadString('\n')
+		text = strings.Replace(text, "\n", "", -1)
+		text = strings.Replace(text, "\r", "", -1)
+		if text == "0" {
+			ActivateAI = true
+			//ActivateAI2 = true
+			loop = false
+		} else if (text == "1") {
+			ActivateAI = true
+			loop = false
+		} else if text == "2" {
+			ActivateAI = false
+			loop = false
+		} else {
+			fmt.Println("Invalid number of players, please try again!")
+			a = false
+		}
+	}
+	loop = true
 	rand.Seed(time.Now().UnixNano())
 	for loop {
 		reader := bufio.NewReader(os.Stdin)
@@ -40,7 +68,7 @@ func main() {
 	fmt.Println("Player 2 is", Player2)
 	game := CreateNewBoard()
 	currentplayer := BLACK
-
+	loop = true 
 	for !game.gameOver() {
 
 		PrintBoard(game.board)
@@ -50,19 +78,22 @@ func main() {
 		fmt.Println("")
 		if Player1 == currentplayer {
 			fmt.Println("Player 1, it's your turn!")
-		} else if Player2 == currentplayer {
+		} else if Player2 == currentplayer && !ActivateAI {
 			fmt.Println("Player 2, it's your turn!")
+		} else if Player2 == currentplayer && ActivateAI {
+			fmt.Print("Your opponent places a ", currentplayer.String(), " piece at: ")
 		}
 		moves := getMoves(game, currentplayer)
-		if len(moves) > 0 {
+		if len(moves) > 0 && (!ActivateAI || (ActivateAI && currentplayer == Player1)) {
 			fmt.Println("Your Available moves are:")
-		}
-		for i, move := range moves {
+			for i, move := range moves {
 			fmt.Print(move)
-			fmt.Print(" ")
 			if i == len(moves) - 1{
 				fmt.Println(".")
+			} else {
+				fmt.Print(" ")
 			}
+		}
 		}
 		if (len(moves) == 0) {
 			fmt.Println("No moves available.", currentplayer.String(), "turn is skipped")
@@ -71,13 +102,25 @@ func main() {
 		}
 		loop = true 
 		for loop {
-			//moveReader := bufio.NewReader(os.Stdin)
-			//playerChoice, _ := moveReader.ReadString('\n')
-			//playerChoice = strings.Replace(playerChoice, "\n", "", -1)
-			//playerChoice = strings.Replace(playerChoice, "\r", "", -1)
-			//playerChoice = strings.ToUpper(playerChoice)
-			randnum := rand.Intn(len(moves))
-			playerChoice := moves[randnum]//DUMB AI
+			var playerChoice string
+			if ActivateAI && currentplayer == Player2 {
+				randnum := rand.Intn(len(moves))
+				playerChoice = moves[randnum]//DUMB AI
+				if currentplayer == BLACK {
+					playerChoice = BlackStrategy(game)
+				}
+
+				if currentplayer == WHITE {
+					playerChoice = WhiteStrategy(game)
+				}
+				fmt.Println(playerChoice)
+			} else {
+				moveReader := bufio.NewReader(os.Stdin)
+				playerChoice, _ = moveReader.ReadString('\n')
+				playerChoice = strings.Replace(playerChoice, "\n", "", -1)
+				playerChoice = strings.Replace(playerChoice, "\r", "", -1)
+				playerChoice = strings.ToUpper(playerChoice)
+			}
 			if Contains(moves, playerChoice) {
 				rawMove, _ := getIndex(playerChoice)
 				game.flipAll(currentplayer, rawMove)
