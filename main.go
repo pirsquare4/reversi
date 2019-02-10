@@ -12,12 +12,18 @@ import (
 )
 
 var BOARDSIZE = 8
+var DEPTH = 10
+
+const MaxUint = ^uint(0) 
+const MinUint = 0 
+const MaxInt = int(MaxUint >> 1) 
+const MinInt = -MaxInt - 1
 
 //Where the games begin!
 func main() {
 	loop := true
 	ActivateAI := false
-	//ActivateAI2 := false
+	ActivateAI2 := false
 	a := true
 	for loop {
 		reader := bufio.NewReader(os.Stdin)
@@ -30,7 +36,7 @@ func main() {
 		text = strings.Replace(text, "\r", "", -1)
 		if text == "0" {
 			ActivateAI = true
-			//ActivateAI2 = true
+			ActivateAI2 = true
 			loop = false
 		} else if (text == "1") {
 			ActivateAI = true
@@ -43,11 +49,22 @@ func main() {
 			a = false
 		}
 	}
-	loop = true
 	rand.Seed(time.Now().UnixNano())
+	loop = true
+	fmt.Println("Enter seed")
+	seedReader := bufio.NewReader(os.Stdin)
+	seedtext, _ := seedReader.ReadString('\n')
+	seedtext = strings.Replace(seedtext, "\n", "", -1)
+	seedtext = strings.Replace(seedtext, "\r", "", -1)
+	seed, _ := strconv.ParseInt(string(seedtext), 0, 64)
+	rand.Seed(seed)
 	for loop {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Println("Player 1, Choose your Color: White or Black?")
+		if ActivateAI && ActivateAI2 {
+			fmt.Println("Choose a Color for Computer 1: White or Black?")		
+		} else {
+			fmt.Println("Player 1, Choose your Color: White or Black?")
+		}
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\n", "", -1)
 		text = strings.Replace(text, "\r", "", -1)
@@ -103,15 +120,14 @@ func main() {
 		loop = true 
 		for loop {
 			var playerChoice string
-			if ActivateAI && currentplayer == Player2 {
-				randnum := rand.Intn(len(moves))
-				playerChoice = moves[randnum]//DUMB AI
+			if ActivateAI && currentplayer == Player2 || ActivateAI2 && currentplayer == Player1 {
 				if currentplayer == BLACK {
-					playerChoice = BlackStrategy(game)
+					playerChoice, _ = BlackStrategy(game, 10, MinInt, MaxInt)
 				}
-
 				if currentplayer == WHITE {
-					playerChoice = WhiteStrategy(game)
+					randnum := rand.Intn(len(moves))
+					playerChoice = moves[randnum]//DUMB AI
+					//playerChoice, _ = WhiteStrategy(game, 1)
 				}
 				fmt.Println(playerChoice)
 			} else {
@@ -127,7 +143,7 @@ func main() {
 				loop = false
 				currentplayer = currentplayer.Opposite()
 			} else {
-				fmt.Println("Not a valid move, please try again")
+				fmt.Println(playerChoice, " is not a valid move, please try again")
 			}
 		}
 
