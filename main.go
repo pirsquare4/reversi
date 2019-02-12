@@ -93,14 +93,15 @@ func main() {
 		fmt.Println("")
 		fmt.Println("White:", whitePoints, "     ", "Black:", blackPoints)
 		fmt.Println("")
+		moves := getMoves(game, currentplayer)
 		if Player1 == currentplayer {
 			fmt.Println("Player 1, it's your turn!")
 		} else if Player2 == currentplayer && !ActivateAI {
 			fmt.Println("Player 2, it's your turn!")
 		} else if Player2 == currentplayer && ActivateAI {
+			fmt.Println("Your opponent's moves are", moves)
 			fmt.Print("Your opponent places a ", currentplayer.String(), " piece at: ")
 		}
-		moves := getMoves(game, currentplayer)
 		if len(moves) > 0 && (!ActivateAI || (ActivateAI && currentplayer == Player1)) {
 			fmt.Println("Your Available moves are:")
 			for i, move := range moves {

@@ -6,7 +6,7 @@ func WhiteStrategy(game Game, depth int, alpha int, beta int) (string, int) {
 	}
 	moves := getMoves(game, WHITE)
 	if len(moves) == 0 {
-		return "", MinInt
+		return "", -1000
 	}
 
 	bestSoFar := MinInt
@@ -38,7 +38,7 @@ func BlackStrategy(game Game, depth int, alpha int, beta int) (string, int) {
 	}
 	moves := getMoves(game, BLACK)
 	if len(moves) == 0 {
-		return "", MaxInt
+		return "", 1000
 	}
 
 	bestSoFar := MaxInt
@@ -75,22 +75,50 @@ func copyBoard(game Game) [64]Piece {
 
 func heuristic(game Game) int {
 	board := game.board
-	a := 0
+	pieceScore := 0
 	for i := 0; i < len(board); i++ {
 		if board[i] == WHITE {
-			a++
+			pieceScore++
 		} else if board[i] == BLACK {
-			a--
+			pieceScore--
 		}
 	}
 	if game.gameOver() {
-		if a > 0 {
-			a = MaxInt
-		} else if a < 0 {
-			a = MinInt
+		if pieceScore > 0 {
+			return MaxInt
+		} else if pieceScore < 0 {
+			return MinInt
 		}
 	}
-	return a
+	cornerCount := 0
+	cornerPieces := []string{"A1","A8","H1","H8"}
+	for _, cornerPiece := range cornerPieces {
+		if piece, _ := game.get(cornerPiece); piece == BLACK {
+			cornerCount--
+		} else if piece, _ := game.get(cornerPiece); piece == WHITE {
+			cornerCount++
+		}
+	}
+
+	edgeCount := 0
+	edgePieces := []string{"A3","A4","A5","A6","C1","D1","E1","F1","C8","D8","E8","F8","H3","H4","H5","H6"}
+	for _, edgePiece := range edgePieces {
+		if piece, _ := game.get(edgePiece); piece == WHITE {
+			edgeCount++
+		} else if piece, _ := game.get(edgePiece); piece == BLACK {
+			edgeCount--
+		}
+	}
+	nextToCount := 0
+	nextToCornerPieces := []string{"A2","B1","B2","A7","B8","B7","G1","H2","G2","G8","H7","G7"}
+	for _, nextToCornerPiece := range nextToCornerPieces {
+		if piece, _ := game.get(nextToCornerPiece); piece == WHITE {
+			nextToCount++
+		} else if piece, _ := game.get(nextToCornerPiece); piece == BLACK {
+			nextToCount--
+		}
+	}
+	return pieceScore + cornerCount * 5 + edgeCount - (nextToCount 	* 2) 
 }
 
 func min(x int, y int) int {
