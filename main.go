@@ -9,6 +9,7 @@ import (
 	"strings"
 	"math/rand"
 	"time"
+	"log"
 )
 
 var BOARDSIZE = 8
@@ -21,6 +22,7 @@ const MinInt = -MaxInt - 1
 
 //Where the games begin!
 func main() {
+	c := make(chan string, 1)
 	loop := true
 	ActivateAI := false
 	ActivateAI2 := false
@@ -58,6 +60,14 @@ func main() {
 	seedtext = strings.Replace(seedtext, "\r", "", -1)
 	seed, _ := strconv.ParseInt(string(seedtext), 0, 64)
 	rand.Seed(seed)
+
+	fmt.Println("Please enter, in seconds, how much time each player has to make a move (e.g. 30, or 60)")
+	timerReader := bufio.NewReader(os.Stdin)
+	timertext, _ := timerReader.ReadString('\n')
+	timertext = strings.Replace(timertext, "\n", "", -1)
+	timertext = strings.Replace(timertext, "\r", "", -1)
+	timer, _ := strconv.ParseInt(string(timertext), 0, 64)
+
 	for loop {
 		reader := bufio.NewReader(os.Stdin)
 		if ActivateAI && ActivateAI2 {
@@ -123,21 +133,30 @@ func main() {
 			var playerChoice string
 			if ActivateAI && currentplayer == Player2 || ActivateAI2 && currentplayer == Player1 {
 				if currentplayer == BLACK {
-					playerChoice, _ = BlackStrategy(game, 10, MinInt, MaxInt)
+					playerChoice, _ = BlackStrategy(game, 7, MinInt, MaxInt)
 				}
 				if currentplayer == WHITE {
-					randnum := rand.Intn(len(moves))
-					playerChoice = moves[randnum]//DUMB AI
-					//playerChoice, _ = WhiteStrategy(game, 1)
+					//randnum := rand.Intn(len(moves))
+					//playerChoice = moves[randnum]//DUMB AI
+					playerChoice, _ = WhiteStrategy(game, 7, MinInt, MaxInt)
 				}
 				fmt.Println(playerChoice)
 			} else {
-				moveReader := bufio.NewReader(os.Stdin)
-				playerChoice, _ = moveReader.ReadString('\n')
-				playerChoice = strings.Replace(playerChoice, "\n", "", -1)
-				playerChoice = strings.Replace(playerChoice, "\r", "", -1)
-				playerChoice = strings.ToUpper(playerChoice)
-			}
+    			go scan(c)
+
+    			select {
+    			case playerChoice = <-c:
+    				playerChoice = strings.Replace(playerChoice, "\n", "", -1)
+					playerChoice = strings.Replace(playerChoice, "\r", "", -1)
+					playerChoice = strings.ToUpper(playerChoice)
+				case <-time.After(time.Duration(timer * 1000) * time.Millisecond):
+        			fmt.Println("Didn't enter a move quick enough")
+        			randnum := rand.Intn(len(moves))
+					playerChoice = moves[randnum ]
+					fmt.Println("Didn't enter a move quick enough, the move ", playerChoice, " was chosen for you")
+
+    			}
+    			}
 			if Contains(moves, playerChoice) {
 				rawMove, _ := getIndex(playerChoice)
 				game.flipAll(currentplayer, rawMove)
@@ -179,6 +198,7 @@ const (
 type Game struct {
 	board [64]Piece
 }
+
 func (piece Piece) String() string {
 	names := [...]string{
 		"Empty",
@@ -378,4 +398,16 @@ func (game Game) score() (int, int) {
 		}
 	}
 	return white, black
+}
+
+func scan(input chan string) {
+	for {
+	    in := bufio.NewReader(os.Stdin)
+	    result, err := in.ReadString('\n')
+	    if err != nil {
+	        log.Fatal(err)
+	    }
+
+	    input <- result
+	}
 }

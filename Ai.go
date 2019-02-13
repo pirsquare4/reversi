@@ -118,7 +118,16 @@ func heuristic(game Game) int {
 			nextToCount--
 		}
 	}
-	return pieceScore + cornerCount * 5 + edgeCount - (nextToCount 	* 2) 
+
+	safeCount := 0
+	for i := 0; i < len(board); i++ {
+		if board[i] == WHITE && safe(game, TranslateToMove(i)) {
+			safeCount++
+		} else if board[i] == BLACK && safe(game, TranslateToMove(i)) {
+			pieceScore--
+		}
+	} 
+	return pieceScore + cornerCount * 10 + pieceScore * 6 + edgeCount * 4 - (nextToCount * 8) 
 }
 
 func min(x int, y int) int {
@@ -133,4 +142,105 @@ func max(x int, y int) int {
 		return x
 	}
 	return y
+}
+
+func safe(game Game, place string) bool {
+	board := game.board
+	pieceColor, _  := game.get(place)
+	x := false
+	y := false
+	diagonalLeft := false
+	diagonalRight := false 
+	//x
+	startingSpot, _ := getIndex(place)
+	foundOpposite := false
+	for i:= startingSpot; isAdjacent(i, i + 8); i += 8 {
+		if !(board[i + 8] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		y = true
+	}
+
+	foundOpposite = false
+	for i:= startingSpot; isAdjacent(i, i - 8); i -= 8 {
+		if !(board[i - 8] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		y = true
+	}
+
+	foundOpposite = false
+	for i:= startingSpot; isAdjacent(i, i - 1); i -= 1 {
+		if !(board[i - 1] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		x = true
+	}
+
+	foundOpposite = false
+	for i:= startingSpot; isAdjacent(i, i + 1); i += 1 {
+		if !(board[i + 1] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		x = true
+	}
+
+	foundOpposite = false
+	for i:= startingSpot; isAdjacent(i, i + 9); i += 9 {
+		if !(board[i + 9] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		diagonalRight = true
+	}
+
+	foundOpposite = false
+	for i:= startingSpot; isAdjacent(i, i - 9); i -= 9 {
+		if !(board[i - 9] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		diagonalRight = true
+	}
+
+	foundOpposite = false
+	for i:= startingSpot; isAdjacent(i, i - 7); i -= 7 {
+		if !(board[i - 7] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		diagonalLeft = true
+	}
+
+	foundOpposite = false
+	for i:= startingSpot; isAdjacent(i, i + 7); i += 7 {
+		if !(board[i + 7] == pieceColor) {
+			foundOpposite = true
+			break
+		}
+	}
+	if !foundOpposite {
+		diagonalLeft = true
+	}
+
+	return x && y && diagonalLeft && diagonalRight
+
 }
