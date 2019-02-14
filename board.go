@@ -50,7 +50,7 @@ func destructiveSandwhich(GameState *Game, player Piece, index int, adder int, f
 		if board[adjacentIndex] == player.Opposite() && isAdjacent(adjacentIndex, adjacentIndex + adder) {
 				valid := destructiveSandwhich(GameState, player, adjacentIndex, adder, found)
 				if valid {
-				GameState.setRaw(adjacentIndex, player)
+					GameState.setRaw(adjacentIndex, player)
 				}
 				return valid
 		} else if board[adjacentIndex] == player {

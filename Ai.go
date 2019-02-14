@@ -1,76 +1,133 @@
 package main
 
-func WhiteStrategy(game Game, depth int, alpha int, beta int) (string, int) {
-	if depth <= 0 || game.gameOver() {
-		return "", heuristic(game)
+// func WhiteStrategy(game Game, depth int, alpha int, beta int) (string, int) {
+// 	moves := getMoves(game, WHITE)
+// 	amtMoves := len(moves)
+// 	if depth <= 0 || game.gameOver() {
+// 		return "", heuristic(game, amtMoves)
+// 	}
+// 	if len(moves) == 0 {
+// 		return BlackStrategy(game, depth - 1, alpha, beta)
+
+// 	}
+
+// 	bestSoFar := MinInt
+// 	var bestMove string
+// 	for _, move := range moves {
+// 		myCopy := copyBoard(game)
+// 		var gameCopy Game
+// 		gameCopy.board = myCopy
+
+// 		rawMove, _ := getIndex(move)
+// 		gameCopy.flipAll(WHITE, rawMove)
+// 		_, points := BlackStrategy(gameCopy, depth - 1, alpha, beta)
+
+// 		if points >= bestSoFar {
+// 			bestMove = move
+// 			bestSoFar = points
+// 		}
+// 		alpha = max(alpha, bestSoFar)
+// 		if beta <= alpha {
+// 			break
+// 		}
+// 	}
+// 	return bestMove, bestSoFar
+// }
+
+// func BlackStrategy(game Game, depth int, alpha int, beta int) (string, int) {
+// 	moves := getMoves(game, BLACK)
+// 	amtMoves := len(moves)
+// 	if depth <= 0 || game.gameOver() {
+// 		return "", heuristic(game, amtMoves)
+// 	}
+// 	if len(moves) == 0 {
+// 		return WhiteStrategy(game, depth - 1, alpha, beta)
+// 	}
+
+// 	bestSoFar := MaxInt
+// 	var bestMove string
+// 	for _, move := range moves {
+// 		myCopy := copyBoard(game)
+// 		var gameCopy Game
+// 		gameCopy.board = myCopy
+
+// 		rawMove, _ := getIndex(move)
+// 		gameCopy.flipAll(BLACK, rawMove)
+// 		_, points := WhiteStrategy(gameCopy, depth - 1, alpha, beta)
+
+// 		if points <= bestSoFar {
+// 			bestMove = move
+// 			bestSoFar = points
+// 		}
+// 		beta = min(beta, bestSoFar)
+// 		if beta <= alpha {
+// 			break
+// 		}
+// 	}
+// 	return bestMove, bestSoFar
+// }
+
+func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, string) {
+	if depth == 0 || game.gameOver() {
+		return heuristic(game), " "
 	}
-	moves := getMoves(game, WHITE)
-	if len(moves) == 0 {
-		return "", -1000
-	}
-
-	bestSoFar := MinInt
-	var bestMove string
-	for _, move := range moves {
-		myCopy := copyBoard(game)
-		var gameCopy Game
-		gameCopy.board = myCopy
-
-		rawMove, _ := getIndex(move)
-		gameCopy.flipAll(WHITE, rawMove)
-		_, points := BlackStrategy(gameCopy, depth - 1, alpha, beta)
-
-		if points >= bestSoFar {
-			bestMove = move
-			bestSoFar = points
+	if maximizing {
+		bestSoFar := MinInt
+		bestMove := " "
+		moves := getMoves(game, WHITE)
+		for _, move := range moves {
+			gameCopy := copyGame(game)
+			index, err := getIndex(move)
+			if err != nil {
+				print("ERRRRRRRRRRRRRRRR!!!")
+			}
+			gameCopy.flipAll(WHITE, index)
+			val, _ := minimax(gameCopy, depth - 1, false, alpha, beta)
+			if bestSoFar < val {
+				bestSoFar = val
+				bestMove = move
+			}
+			alpha = max(bestSoFar, alpha)
+			if beta <= alpha {
+				break
+			}
 		}
-		alpha = max(alpha, bestSoFar)
-		if beta <= alpha {
-			break
+		return bestSoFar, bestMove
+	} else {
+		bestSoFar := MaxInt
+		bestMove := " "
+		moves := getMoves(game, BLACK)
+		for _, move := range moves {
+			gameCopy := copyGame(game)
+			index, err := getIndex(move)
+			if err != nil {
+				print("ERRRRRRRRRRRRRRRRRR!!! 2")
+			}
+			gameCopy.flipAll(BLACK, index)
+			val, _ := minimax(gameCopy, depth - 1, true, alpha, beta)
+			if bestSoFar > val {
+				bestMove = move
+				bestSoFar = val
+			}
+			beta = min(beta, bestSoFar)
+			if beta <= alpha {
+				break
+			}
 		}
+		return bestSoFar, bestMove
 	}
-	return bestMove, heuristic(game)
+	return -1, " "
 }
 
-func BlackStrategy(game Game, depth int, alpha int, beta int) (string, int) {
-	if depth <= 0 || game.gameOver() {
-		return "", heuristic(game)
-	}
-	moves := getMoves(game, BLACK)
-	if len(moves) == 0 {
-		return "", 1000
-	}
-
-	bestSoFar := MaxInt
-	var bestMove string
-	for _, move := range moves {
-		myCopy := copyBoard(game)
-		var gameCopy Game
-		gameCopy.board = myCopy
-
-		rawMove, _ := getIndex(move)
-		gameCopy.flipAll(BLACK, rawMove)
-		_, points := WhiteStrategy(gameCopy, depth - 1, alpha, beta)
-
-		if points <= bestSoFar {
-			bestMove = move
-			bestSoFar = points
-		}
-		beta = min(beta, bestSoFar)
-		if beta <= alpha {
-			break
-		}
-	}
-	return bestMove, heuristic(game)
-}
-
-func copyBoard(game Game) [64]Piece {
+func copyGame(game Game) Game {
 	board := game.board
 	var myCopy [64]Piece
 	for i := 0; i < len(board); i++ {
 		myCopy[i] = board[i]
 	}
-	return myCopy
+	var newGame Game
+	newGame.board = myCopy
+	return newGame
 }
 
 func heuristic(game Game) int {
@@ -124,11 +181,12 @@ func heuristic(game Game) int {
 		if board[i] == WHITE && safe(game, TranslateToMove(i)) {
 			safeCount++
 		} else if board[i] == BLACK && safe(game, TranslateToMove(i)) {
-			pieceScore--
+			safeCount--
 		}
-	} 
-	return pieceScore + cornerCount * 10 + pieceScore * 6 + edgeCount * 4 - (nextToCount * 8) 
+	}
+	return pieceScore + cornerCount * 10 + safeCount*5 - nextToCount*15
 }
+
 
 func min(x int, y int) int {
 	if x < y {

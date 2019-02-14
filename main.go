@@ -13,12 +13,10 @@ import (
 )
 
 var BOARDSIZE = 8
-var DEPTH = 10
+var DEPTH = 5
 
-const MaxUint = ^uint(0) 
-const MinUint = 0 
-const MaxInt = int(MaxUint >> 1) 
-const MinInt = -MaxInt - 1
+const MaxInt = 10000
+const MinInt = -10000
 
 //Where the games begin!
 func main() {
@@ -133,12 +131,14 @@ func main() {
 			var playerChoice string
 			if ActivateAI && currentplayer == Player2 || ActivateAI2 && currentplayer == Player1 {
 				if currentplayer == BLACK {
-					playerChoice, _ = BlackStrategy(game, 7, MinInt, MaxInt)
+					_ , playerChoice = minimax(game, 6, false, MinInt, MaxInt)
+					//randnum := rand.Intn(len(moves))
+					//playerChoice = moves[randnum]//DUMB AI
 				}
 				if currentplayer == WHITE {
 					//randnum := rand.Intn(len(moves))
 					//playerChoice = moves[randnum]//DUMB AI
-					playerChoice, _ = WhiteStrategy(game, 7, MinInt, MaxInt)
+					_, playerChoice = minimax(game, 6, true, MinInt, MaxInt)
 				}
 				fmt.Println(playerChoice)
 			} else {
