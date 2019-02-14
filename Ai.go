@@ -91,7 +91,7 @@ func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, s
 				bestMove = move
 			}
 			alpha = max(bestSoFar, alpha)
-			if beta < alpha {
+			if beta <= alpha {
 				break
 			}
 		}
