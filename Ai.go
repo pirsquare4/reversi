@@ -190,9 +190,9 @@ func heuristic(game Game) int {
 			safeCount--
 		}
 	}
-	return pieceScore + cornerCount * 10 + safeCount * 3 - nextToCount * 3
+	mobility := len(getMoves(game, WHITE)) - len(getMoves(game, BLACK))
+	return pieceScore + cornerCount * 3 - nextToCount * 3 + mobility
 }
-
 
 func min(x int, y int) int {
 	if x < y {
