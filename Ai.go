@@ -69,7 +69,13 @@ package main
 
 func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, string) {
 	if depth == 0 || game.gameOver() {
-		return heuristic(game), " "
+		mobi:= 0
+		if maximizing {
+			mobi = len(getMoves(game,WHITE))
+		} else {
+			mobi = len(getMoves(game, BLACK))
+		}
+		return heuristic(game, mobi), " "
 	}
 	if maximizing {
 		bestSoFar := MinInt
@@ -136,7 +142,7 @@ func copyGame(game Game) Game {
 	return newGame
 }
 
-func heuristic(game Game) int {
+func heuristic(game Game, mobility int) int {
 	board := game.board
 	pieceScore := 0
 	for i := 0; i < len(board); i++ {
@@ -190,8 +196,7 @@ func heuristic(game Game) int {
 			safeCount--
 		}
 	}
-	mobility := len(getMoves(game, WHITE)) - len(getMoves(game, BLACK))
-	return pieceScore + cornerCount * 3 - nextToCount * 3 + mobility
+	return pieceScore * 1 + cornerCount * 1000 + mobility * 100
 }
 
 func min(x int, y int) int {

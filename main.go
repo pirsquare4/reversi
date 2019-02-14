@@ -131,14 +131,14 @@ func main() {
 			var playerChoice string
 			if ActivateAI && currentplayer == Player2 || ActivateAI2 && currentplayer == Player1 {
 				if currentplayer == BLACK {
-					//_ , playerChoice = minimax(game, 6, false, MinInt, MaxInt)
-					randnum := rand.Intn(len(moves))
-					playerChoice = moves[randnum]//DUMB AI
+					_ , playerChoice = minimax(game, 6, false, MinInt, MaxInt)
+					//randnum := rand.Intn(len(moves))
+					//playerChoice = moves[randnum]//DUMB AI
 				}
 				if currentplayer == WHITE {
 					//randnum := rand.Intn(len(moves))
 					//playerChoice = moves[randnum]//DUMB AI
-					_, playerChoice = minimax(game, 7, true, MinInt, MaxInt)
+					_, playerChoice = minimax(game, 6, true, MinInt, MaxInt)
 				}
 				fmt.Println(playerChoice)
 			} else {
