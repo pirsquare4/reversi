@@ -75,6 +75,9 @@ func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, s
 		bestSoFar := MinInt
 		bestMove := " "
 		moves := getMoves(game, WHITE)
+		if len(moves) == 0 {
+			return minimax(game, depth - 1, false, alpha, beta)
+		}
 		for _, move := range moves {
 			gameCopy := copyGame(game)
 			index, err := getIndex(move)
@@ -83,12 +86,12 @@ func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, s
 			}
 			gameCopy.flipAll(WHITE, index)
 			val, _ := minimax(gameCopy, depth - 1, false, alpha, beta)
-			if bestSoFar < val {
+			if bestSoFar <= val {
 				bestSoFar = val
 				bestMove = move
 			}
 			alpha = max(bestSoFar, alpha)
-			if beta <= alpha {
+			if beta < alpha {
 				break
 			}
 		}
@@ -98,6 +101,9 @@ func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, s
 		bestMove := " "
 		moves := getMoves(game, BLACK)
 		for _, move := range moves {
+			if len(moves) == 0 {
+			return minimax(game, depth - 1, true, alpha, beta)
+			}
 			gameCopy := copyGame(game)
 			index, err := getIndex(move)
 			if err != nil {
@@ -105,7 +111,7 @@ func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, s
 			}
 			gameCopy.flipAll(BLACK, index)
 			val, _ := minimax(gameCopy, depth - 1, true, alpha, beta)
-			if bestSoFar > val {
+			if bestSoFar >= val {
 				bestMove = move
 				bestSoFar = val
 			}
@@ -184,7 +190,7 @@ func heuristic(game Game) int {
 			safeCount--
 		}
 	}
-	return pieceScore + cornerCount * 10 + safeCount*5 - nextToCount*15
+	return pieceScore + cornerCount * 10 + safeCount * 3 - nextToCount * 3
 }
 
 
