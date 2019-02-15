@@ -136,6 +136,7 @@ func main() {
 					case a := <- c:
 						playerChoice = a
 					case <-time.After(time.Duration(timer * 1000) * time.Millisecond):
+						moves = getMoves(game, currentplayer)
 						randnum := rand.Intn(len(moves))
 						playerChoice = moves[randnum]//DUMB AI
 						fmt.Println(" ")
@@ -150,6 +151,7 @@ func main() {
 					case a := <- c:
 						playerChoice = a
 					case <-time.After(time.Duration(timer * 1000) * time.Millisecond):
+						moves = getMoves(game, currentplayer)
 						randnum := rand.Intn(len(moves))
 						playerChoice = moves[randnum]//DUMB AI
 						fmt.Println(" ")
