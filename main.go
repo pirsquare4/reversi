@@ -15,8 +15,8 @@ import (
 var BOARDSIZE = 8
 var DEPTH = 6
 
-const MaxInt = 100000
-const MinInt = -100000 
+const MaxInt = 1000000
+const MinInt = -1000000
 
 //Where the games begin!
 func main() {
