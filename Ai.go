@@ -68,7 +68,10 @@ package main
 // }
 
 func minimax(game Game, depth int, maximizing bool, alpha int, beta int) (int, string) {
-	if depth == 0 || game.gameOver() {
+	if game.gameOver() {
+		return heuristic(game, 0), " "
+	}
+	if depth == 0 {
 		mobi:= 0
 		if maximizing {
 			mobi = len(getMoves(game,WHITE))
@@ -169,34 +172,7 @@ func heuristic(game Game, mobility int) int {
 		}
 	}
 
-	edgeCount := 0
-	edgePieces := []string{"A3","A4","A5","A6","C1","D1","E1","F1","C8","D8","E8","F8","H3","H4","H5","H6"}
-	for _, edgePiece := range edgePieces {
-		if piece, _ := game.get(edgePiece); piece == WHITE {
-			edgeCount++
-		} else if piece, _ := game.get(edgePiece); piece == BLACK {
-			edgeCount--
-		}
-	}
-	nextToCount := 0
-	nextToCornerPieces := []string{"A2","B1","B2","A7","B8","B7","G1","H2","G2","G8","H7","G7"}
-	for _, nextToCornerPiece := range nextToCornerPieces {
-		if piece, _ := game.get(nextToCornerPiece); piece == WHITE {
-			nextToCount++
-		} else if piece, _ := game.get(nextToCornerPiece); piece == BLACK {
-			nextToCount--
-		}
-	}
-
-	safeCount := 0
-	for i := 0; i < len(board); i++ {
-		if board[i] == WHITE && safe(game, TranslateToMove(i)) {
-			safeCount++
-		} else if board[i] == BLACK && safe(game, TranslateToMove(i)) {
-			safeCount--
-		}
-	}
-	return pieceScore * 1 + cornerCount * 1000 + mobility * 100
+	return pieceScore * 1 + mobility * 100 + cornerCount * 1000
 }
 
 func min(x int, y int) int {

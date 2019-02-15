@@ -13,10 +13,10 @@ import (
 )
 
 var BOARDSIZE = 8
-var DEPTH = 5
+var DEPTH = 7
 
-const MaxInt = 10000
-const MinInt = -10000
+const MaxInt = 100000
+const MinInt = -100000
 
 //Where the games begin!
 func main() {
@@ -131,14 +131,33 @@ func main() {
 			var playerChoice string
 			if ActivateAI && currentplayer == Player2 || ActivateAI2 && currentplayer == Player1 {
 				if currentplayer == BLACK {
-					_ , playerChoice = minimax(game, 6, false, MinInt, MaxInt)
-					//randnum := rand.Intn(len(moves))
-					//playerChoice = moves[randnum]//DUMB AI
+					go concurrentBlack(c, game)
+					select{
+					case a := <- c:
+						playerChoice = a
+					case <-time.After(time.Duration(timer * 1000) * time.Millisecond):
+						randnum := rand.Intn(len(moves))
+						playerChoice = moves[randnum]//DUMB AI
+						fmt.Println(" ")
+						fmt.Println("AI ran out of time! Choosing a random move..")
+						fmt.Println(" ")
+						fmt.Print("Random Black move is: ")
+					}
 				}
 				if currentplayer == WHITE {
-					//randnum := rand.Intn(len(moves))
-					//playerChoice = moves[randnum]//DUMB AI
-					_, playerChoice = minimax(game, 6, true, MinInt, MaxInt)
+					go concurrentWhite(c, game)
+					select{
+					case a := <- c:
+						playerChoice = a
+					case <-time.After(time.Duration(timer * 1000) * time.Millisecond):
+						randnum := rand.Intn(len(moves))
+						playerChoice = moves[randnum]//DUMB AI
+						fmt.Println(" ")
+						fmt.Println("AI ran out of time! Choosing a random move..")
+						fmt.Println(" ")
+						fmt.Print("Random White move is: ")
+					}
+
 				}
 				fmt.Println(playerChoice)
 			} else {
@@ -411,4 +430,15 @@ func scan(input chan string) {
 
 	    input <- result
 	}
+}
+
+func concurrentBlack(input chan string, game Game) {
+	_ , a := minimax(game, DEPTH, false, MinInt, MaxInt)
+	input <- a
+}
+
+func concurrentWhite(input chan string, game Game) {
+	_ , a := minimax(game, DEPTH, true, MinInt, MaxInt)
+	input <- a
+
 }
